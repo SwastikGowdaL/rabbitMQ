@@ -1,4 +1,5 @@
 const amqp = require("amqplib");
+require("dotenv").config();
 
 const msg = {
     number: process.argv[2]
@@ -6,11 +7,18 @@ const msg = {
 
 const connect = async () => {
     try {
-        const connection = await amqp.connect("amqp://localhost:5672");
+        //* amqp server localhost = "amqp://localhost:5672"
+        //*amqp cloud server = process.env.AMQP_SERVER
+        const amqpServer = process.env.AMQP_SERVER;
+        const connection = await amqp.connect(amqpServer);
         const channel = await connection.createChannel();
-        const result = await channel.assertQueue("jobs");
+        await channel.assertQueue("jobs");
+
         channel.sendToQueue("jobs", Buffer.from(JSON.stringify(msg)));
         console.log(`job enqueued successfully ${msg.number}`);
+        
+        await channel.close();
+        await connection.close();
     } catch (err) {
         console.error(err);
     }

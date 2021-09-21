@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "publish" :"node publisher.js",
-    "consume" :"node consumer.js"
+    "publish": "node publisher.js",
+    "consume": "node consumer.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.8.0"
+    "amqplib": "^0.8.0",
+    "dotenv": "^10.0.0"
   }
 }
