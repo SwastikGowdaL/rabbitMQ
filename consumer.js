@@ -4,11 +4,12 @@ require("dotenv").config();
 const connect = async () => {
     try {
         //* amqp server localhost = "amqp://localhost:5672"
-       //*amqp cloud server = process.env.AMQP_SERVER
-       const amqpServer = process.env.AMQP_SERVER;
+        //*amqp cloud server = process.env.AMQP_SERVER
+        const amqpServer = process.env.AMQP_SERVER;
         const connection = await amqp.connect(amqpServer);
         const channel = await connection.createChannel();
         await channel.assertQueue("jobs");
+        await channel.assertQueue("hobbies");
 
         channel.consume("jobs", message => {
             console.log(message.content.toString());
@@ -18,6 +19,15 @@ const connect = async () => {
                 channel.ack(message)
             }
         })
+
+        channel.consume("hobbies", message => {
+            console.log(message.content.toString());
+            const hobby = JSON.parse(message.content.toString());
+            if (hobby.game === "chess") {
+                channel.ack(message)
+            }
+        });
+
 
         console.log("waiting for messages...");
     } catch (err) {

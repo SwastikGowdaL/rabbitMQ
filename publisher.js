@@ -1,8 +1,13 @@
 const amqp = require("amqplib");
 require("dotenv").config();
 
+
 const msg = {
-    number: process.argv[2]
+    number: 102
+}
+
+const hobby={
+    "game":"cricket"
 }
 
 const connect = async () => {
@@ -13,9 +18,12 @@ const connect = async () => {
         const connection = await amqp.connect(amqpServer);
         const channel = await connection.createChannel();
         await channel.assertQueue("jobs");
+        await channel.assertQueue("hobbies");
 
         channel.sendToQueue("jobs", Buffer.from(JSON.stringify(msg)));
         console.log(`job enqueued successfully ${msg.number}`);
+        channel.sendToQueue("hobbies",Buffer.from(JSON.stringify(hobby)))
+        console.log(`job enqueued successfully ${hobby.game}`);
         
         await channel.close();
         await connection.close();
@@ -24,4 +32,4 @@ const connect = async () => {
     }
 }
 
-connect();
+module.exports = connect ;
